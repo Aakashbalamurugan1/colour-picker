@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Color Picker Game</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        text-align: center;
+    }
+    #color-box {
+        width: 200px;
+        height: 200px;
+        margin: 20px auto;
+        border: 2px solid black;
+        background-color: #FFFFFF; /* Initial color */
+    }
+    .options {
+        margin-top: 20px;
+    }
+    .option {
+        display: inline-block;
+        width: 50px;
+        height: 50px;
+        margin: 0 10px;
+        cursor: pointer;
+    }
+</style>
+</head>
+<body>
+<h1>Color Picker Game</h1>
+<div id="color-box"></div>
+<div class="options" id="options"></div>
+<div id="level">Level: 1</div>
+<button onclick="newGame()">New Game</button>
+
+<script>
+let level = 1;
+let numOptions = 6;
+
+function getRandomColor(targetColor) {
+    const tolerance = 50 / level; // Adjust tolerance based on level
+    const r = Math.max(0, Math.min(255, Math.round(Math.random() * tolerance * 2 + parseInt(targetColor.substr(1, 2), 16) - tolerance)));
+    const g = Math.max(0, Math.min(255, Math.round(Math.random() * tolerance * 2 + parseInt(targetColor.substr(3, 2), 16) - tolerance)));
+    const b = Math.max(0, Math.min(255, Math.round(Math.random() * tolerance * 2 + parseInt(targetColor.substr(5, 2), 16) - tolerance)));
+    return '#' + ('00' + r.toString(16)).slice(-2) + ('00' + g.toString(16)).slice(-2) + ('00' + b.toString(16)).slice(-2);
+}
+
+function generateOptions(targetColor) {
+    const optionsContainer = document.getElementById('options');
+    optionsContainer.innerHTML = '';
+    const correctColorIndex = Math.floor(Math.random() * numOptions);
+    for (let i = 0; i < numOptions; i++) {
+        const option = document.createElement('div');
+        option.className = 'option';
+        if (i === correctColorIndex) {
+            option.style.backgroundColor = targetColor;
+            option.onclick = function() {
+                alert('Correct! Well done.');
+                level++;
+                if (level % 3 === 0) {
+                    numOptions = Math.max(3, numOptions - 1);
+                }
+                document.getElementById('level').textContent = 'Level: ' + level;
+                newGame();
+            };
+        } else {
+            option.style.backgroundColor = getRandomColor(targetColor);
+            option.onclick = function() {
+                alert('Oops! Try again.');
+                level = 1;
+                numOptions = 6; // Reset number of options
+                document.getElementById('level').textContent = 'Level: ' + level;
+                newGame();
+            };
+        }
+        optionsContainer.appendChild(option);
+    }
+}
+
+function newGame() {
+    const colorBox = document.getElementById('color-box');
+    const targetColor = '#' + ('00' + Math.floor(Math.random() * 256).toString(16)).slice(-2) + ('00' + Math.floor(Math.random() * 256).toString(16)).slice(-2) + ('00' + Math.floor(Math.random() * 256).toString(16)).slice(-2);
+    colorBox.style.backgroundColor = targetColor;
+    generateOptions(targetColor);
+}
+
+newGame();
+</script>
+</body>
+</html>
